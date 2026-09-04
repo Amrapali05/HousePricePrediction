@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+
+            padding-right: 8%;
+
+            background:
+                linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .55)),
+                url("https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1920&q=80");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+
+        }
+
+        /* Main Card */
+
+        .container {
+
+            width: 480px;
+
+            background: rgba(255, 255, 255, .15);
+
+            backdrop-filter: blur(18px);
+
+            border: 1px solid rgba(255, 255, 255, .2);
+
+            border-radius: 20px;
+
+            padding: 40px;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .35);
+
+            animation: fade 1s;
+
+        }
+
+        /* Heading */
+
+        h1 {
+
+            color: #fff;
+
+            text-align: center;
+
+            margin-bottom: 10px;
+
+            font-size: 34px;
+
+        }
+
+        .subtitle {
+
+            text-align: center;
+
+            color: #ddd;
+
+            margin-bottom: 35px;
+
+        }
+
+        /* Form */
+
+        .input-group {
+
+            margin-bottom: 20px;
+
+        }
+
+        label {
+
+            display: block;
+
+            color: white;
+
+            margin-bottom: 8px;
+
+            font-size: 15px;
+
+            font-weight: 500;
+
+        }
+
+        input {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, .95);
+
+            font-size: 15px;
+
+            transition: .3s;
+
+        }
+
+        input:focus {
+
+            outline: none;
+
+            transform: scale(1.02);
+
+            box-shadow: 0 0 15px #00d4ff;
+
+        }
+
+        /* Button */
+
+        button {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #00a8ff;
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: .3s;
+
+        }
+
+        button:hover {
+
+            background: #0086d1;
+
+            transform: translateY(-3px);
+
+            box-shadow: 0 10px 20px rgba(0, 168, 255, .4);
+
+        }
+
+        button:disabled {
+
+            background: #999;
+
+            cursor: not-allowed;
+
+        }
+
+        /* Prediction */
+
+        .result {
+
+            margin-top: 30px;
+
+            background: #d4edda;
+
+            color: #155724;
+
+            padding: 20px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+        }
+
+        /* Footer */
+
+        .footer {
+
+            margin-top: 25px;
+
+            text-align: center;
+
+            color: #ddd;
+
+            font-size: 14px;
+
+        }
+
+        /* Animation */
+
+        @keyframes fade {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(30px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0);
+
+            }
+
+        }
+
+        /* Tablet */
+
+        @media(max-width:992px) {
+
+            body {
+
+                justify-content: center;
+
+                padding: 30px;
+
+            }
+
+            .container {
+
+                width: 500px;
+
+            }
+
+        }
+
+        /* Mobile */
+
+        @media(max-width:600px) {
+
+            body {
+
+                padding: 20px;
+
+                justify-content: center;
+
+            }
+
+            .container {
+
+                width: 100%;
+
+                padding: 30px;
+
+            }
+
+            h1 {
+
+                font-size: 28px;
+
+            }
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🏠 House Price Predictor</h1>
+
+        <p class="subtitle">
+            Predict your property's market value using AI.
+        </p>
+
+        <form method="POST" id="predictForm">
+
+            {% csrf_token %}
+
+            <div class="input-group">
+                <label>Location</label>
+                <input type="text" name="location" placeholder="Enter Location" required>
+            </div>
+
+            <div class="input-group">
+                <label>Square Feet</label>
+                <input type="number" name="sqft" placeholder="Enter Area" required>
+            </div>
+
+            <div class="input-group">
+                <label>BHK</label>
+                <input type="number" name="bhk" placeholder="Enter Bedrooms" required>
+            </div>
+
+            <div class="input-group">
+                <label>Bathrooms</label>
+                <input type="number" name="bath" placeholder="Enter Bathrooms" required>
+            </div>
+
+            <button id="btn">Predict Price</button>
+
+        </form>
+
+        {% if prediction %}
+
+        <div class="result">
+
+            💰 Estimated Property Price
+
+            <br><br>
+
+            ₹ {{ prediction }}
+
+        </div>
+
+        {% endif %}
+
+        <div class="footer">
+
+            Powered by Machine Learning | House Price Prediction System
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const form = document.getElementById("predictForm");
+        const btn = document.getElementById("btn");
+
+        form.addEventListener("submit", function () {
+
+            btn.disabled = true;
+            btn.innerHTML = "Predicting...";
+
+        });
+
+    </script>
+
+</body>
+
+</html>
